@@ -1,0 +1,453 @@
+{
+  "info": {
+    "_postman_id": "3d1f84a9-e4d0-4b64-8be2-bd4dff3e2f22",
+    "name": "RA2311004010332 Backend APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Registration and Auth",
+      "item": [
+        {
+          "name": "Register (Only Once)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"name\": \"{{name}}\",\n  \"mobileNo\": \"{{mobileNo}}\",\n  \"githubUsername\": \"{{githubUsername}}\",\n  \"rollNo\": \"{{rollNo}}\",\n  \"accessCode\": \"{{accessCode}}\"\n}"
+            },
+            "url": {
+              "raw": "{{testServerBaseUrl}}/register",
+              "host": [
+                "{{testServerBaseUrl}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Register success', function () {",
+                  "  pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "if (json.clientID) pm.environment.set('clientID', json.clientID);",
+                  "if (json.clientSecret) pm.environment.set('clientSecret', json.clientSecret);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Auth Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"name\": \"{{name}}\",\n  \"rollNo\": \"{{rollNo}}\",\n  \"accessCode\": \"{{accessCode}}\",\n  \"clientID\": \"{{clientID}}\",\n  \"clientSecret\": \"{{clientSecret}}\"\n}"
+            },
+            "url": {
+              "raw": "{{testServerBaseUrl}}/auth",
+              "host": [
+                "{{testServerBaseUrl}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Auth success', function () {",
+                  "  pm.expect([200, 201]).to.include(pm.response.code);",
+                  "});",
+                  "var json = pm.response.json();",
+                  "if (json.access_token) pm.environment.set('accessToken', json.access_token);",
+                  "if (json.access_token) pm.environment.set('authToken', 'Bearer ' + json.access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Protected Logs API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "{{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stack\": \"backend\",\n  \"level\": \"info\",\n  \"package\": \"service\",\n  \"message\": \"postman verification log\"\n}"
+            },
+            "url": {
+              "raw": "{{testServerBaseUrl}}/logs",
+              "host": [
+                "{{testServerBaseUrl}}"
+              ],
+              "path": [
+                "logs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Protected Depots API",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{testServerBaseUrl}}/depots",
+              "host": [
+                "{{testServerBaseUrl}}"
+              ],
+              "path": [
+                "depots"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Protected Vehicles API",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{testServerBaseUrl}}/vehicles",
+              "host": [
+                "{{testServerBaseUrl}}"
+              ],
+              "path": [
+                "vehicles"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Protected Notifications API",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{testServerBaseUrl}}/notifications",
+              "host": [
+                "{{testServerBaseUrl}}"
+              ],
+              "path": [
+                "notifications"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Local Backend - Vehicle",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/health",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Vehicle Tasks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/vehicle",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicle"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Depots (via Backend)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/vehicle/depots/list",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicle",
+                "depots",
+                "list"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Optimized Maintenance Schedule",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/vehicle/schedule/optimized",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicle",
+                "schedule",
+                "optimized"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Task By TaskID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/vehicle/{{taskId}}",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicle",
+                "{{taskId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Local Backend - Notifications",
+      "item": [
+        {
+          "name": "Get All Notifications (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/notification?page=1&limit=20",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notification"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Notifications (Unread)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/notification/user/1?unreadOnly=true",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notification",
+                "user",
+                "1"
+              ],
+              "query": [
+                {
+                  "key": "unreadOnly",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Priority Inbox",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/notification/user/1/priority",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notification",
+                "user",
+                "1",
+                "priority"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentID\": 1,\n  \"type\": \"Result\",\n  \"message\": \"Your result has been published\",\n  \"priority\": 8\n}"
+            },
+            "url": {
+              "raw": "{{localBaseUrl}}/api/notification",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notification"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data && json.data.id) {",
+                  "  pm.environment.set('notificationId', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Bulk Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentIDs\": [1, 2, 3],\n  \"type\": \"Placement\",\n  \"message\": \"New hiring drive announced\",\n  \"priority\": 9\n}"
+            },
+            "url": {
+              "raw": "{{localBaseUrl}}/api/notification/bulk",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notification",
+                "bulk"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mark Notification As Read",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/notification/{{notificationId}}/read",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notification",
+                "{{notificationId}}",
+                "read"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{localBaseUrl}}/api/notification/{{notificationId}}",
+              "host": [
+                "{{localBaseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notification",
+                "{{notificationId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
